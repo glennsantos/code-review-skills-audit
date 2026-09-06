@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code Review Skills Audit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F5F7F8; --bg-2:#FFFFFF; --bg-3:#EBEFF2;
+  --ink:#1A1F24; --ink-2:#4B5560; --ink-3:#7A8590;
+  --line:#D6DDE3; --line-2:#C3CCD4;
+  --accent:#2C5A85; --accent-ink:#FFFFFF; --accent-soft:#E3ECF5;
+  --has:#237A5A; --has-soft:#DDF0E7;
+  --part:#A46A12; --part-soft:#F6EBD3;
+  --miss:#A8463B; --miss-soft:#F5DEDB;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14181C; --bg-2:#1B2026; --bg-3:#232A31;
+    --ink:#E4E8EB; --ink-2:#AEB8C1; --ink-3:#7F8B96;
+    --line:#2E373F; --line-2:#3B454F;
+    --accent:#7FAFDD; --accent-ink:#0F1A26; --accent-soft:#1E2E3F;
+    --has:#5CBF95; --has-soft:#173428;
+    --part:#D9A64A; --part-soft:#3A2D14;
+    --miss:#E07B70; --miss-soft:#3B1F1C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14181C; --bg-2:#1B2026; --bg-3:#232A31;
+  --ink:#E4E8EB; --ink-2:#AEB8C1; --ink-3:#7F8B96;
+  --line:#2E373F; --line-2:#3B454F;
+  --accent:#7FAFDD; --accent-ink:#0F1A26; --accent-soft:#1E2E3F;
+  --has:#5CBF95; --has-soft:#173428;
+  --part:#D9A64A; --part-soft:#3A2D14;
+  --miss:#E07B70; --miss-soft:#3B1F1C;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code,.mono{font-family:var(--mono);font-size:.92em}
+code{background:var(--bg-3);padding:.05em .35em;border-radius:3px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,4vw,2.9rem);letter-spacing:-.01em}
+h2{font-size:1.65rem;margin-top:3.5rem;margin-bottom:.35rem;padding-top:1.25rem;border-top:1px solid var(--line)}
+h3{font-size:1.2rem;margin-top:2.25rem;margin-bottom:.5rem}
+h4{font-family:var(--sans);font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:.5rem}
+p{margin:0 0 1rem}
+.wrap{max-width:72ch;margin:0 auto;padding:0 1.25rem}
+.wide{max-width:1200px;margin:0 auto;padding:0 1.25rem}
+.eyebrow{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+header{padding:3.5rem 0 2rem}
+header .meta{display:flex;flex-wrap:wrap;gap:.5rem 1.75rem;margin-top:1.25rem;color:var(--ink-2);font-size:.9rem}
+header .meta span b{color:var(--ink);font-weight:500}
+.lede{font-size:1.1rem;color:var(--ink-2);margin-top:1rem;max-width:62ch}
+nav.toc{position:sticky;top:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+nav.toc ol{list-style:none;margin:0;padding:.55rem 0;display:flex;gap:1.5rem;overflow-x:auto;font-size:.85rem;white-space:nowrap}
+nav.toc a{color:var(--ink-2);text-decoration:none}
+nav.toc a:hover{color:var(--accent)}
+.answer{background:var(--bg-2);border:1px solid var(--line);border-left:4px solid var(--accent);padding:1.25rem 1.5rem;margin:1.5rem 0 0;border-radius:4px}
+.answer p:last-child{margin-bottom:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:1.75rem 0 0;border-radius:4px;overflow:hidden}
+.stat{background:var(--bg-2);padding:.9rem 1rem}
+.stat .n{font-family:var(--serif);font-size:1.9rem;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:.8rem;color:var(--ink-2);margin-top:.35rem;line-height:1.3}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+.scroll{overflow-x:auto;margin:1.25rem 0;border:1px solid var(--line);border-radius:4px;background:var(--bg-2)}
+th,td{text-align:left;vertical-align:top;padding:.55rem .7rem;border-bottom:1px solid var(--line)}
+thead th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);font-weight:600;background:var(--bg-3);position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;color:var(--ink-3);width:2ch}
+.inv td:nth-child(2){font-family:var(--mono);font-size:.82rem;min-width:16ch}
+.inv td:nth-child(3),.inv td:nth-child(4){color:var(--ink-2);min-width:12ch}
+.inv td:nth-child(5){min-width:34ch}
+.inv tr.na td{color:var(--ink-3)}
+.inv tr.na td:nth-child(2){color:var(--ink-2)}
+/* matrix */
+.mx th:first-child,.mx td:first-child{position:sticky;left:0;background:var(--bg-2);min-width:24ch;z-index:1;border-right:1px solid var(--line)}
+.mx thead th:first-child{background:var(--bg-3);z-index:2}
+.mx thead th{font-family:var(--mono);text-transform:none;letter-spacing:0;font-size:.74rem;min-width:9ch}
+.mx td{text-align:center;font-family:var(--mono);font-size:.8rem;padding:.45rem .5rem}
+.mx td:first-child{text-align:left;font-family:var(--sans);font-size:.85rem}
+.mx td.h{color:var(--has)}
+.mx td.p{color:var(--part)}
+.mx td.m{color:var(--miss)}
+.mx td.q{color:var(--ink-3)}
+.mx td small{display:block;font-family:var(--sans);font-size:.7rem;color:var(--ink-3);line-height:1.2;margin-top:.15rem}
+.mx tbody tr:hover td{background:var(--bg-3)}
+.mx tbody tr:hover td:first-child{background:var(--bg-3)}
+.legend{display:flex;flex-wrap:wrap;gap:1.25rem;font-size:.82rem;color:var(--ink-2);margin:.5rem 0 0}
+.legend span b{font-family:var(--mono);font-weight:500;margin-right:.3rem}
+.legend .h b{color:var(--has)}.legend .p b{color:var(--part)}.legend .m b{color:var(--miss)}.legend .q b{color:var(--ink-3)}
+/* family sections */
+.family{margin-top:2.5rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem 2.5rem;margin-top:.75rem}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.two ul{margin:0;padding-left:1.1rem}
+.two li{margin-bottom:.55rem}
+.two h4.plus{color:var(--has)}
+.two h4.minus{color:var(--miss)}
+ul.plain{padding-left:1.1rem}
+ul.plain li{margin-bottom:.5rem}
+/* gaps */
+ol.gaps{list-style:none;padding:0;margin:1rem 0 0;counter-reset:gap}
+ol.gaps li{counter-increment:gap;display:grid;grid-template-columns:2.5rem 1fr;gap:.75rem;padding:.9rem 0;border-top:1px solid var(--line)}
+ol.gaps li:last-child{border-bottom:1px solid var(--line)}
+ol.gaps li::before{content:counter(gap,decimal-leading-zero);font-family:var(--mono);color:var(--ink-3);font-size:.85rem;padding-top:.2rem}
+ol.gaps li b{display:block;font-weight:600;margin-bottom:.2rem}
+ol.gaps li p{margin:0;color:var(--ink-2)}
+/* recs */
+ol.recs{padding-left:0;list-style:none;margin:1rem 0 0;counter-reset:rec}
+ol.recs li{counter-increment:rec;position:relative;padding:.85rem 0 .85rem 3rem;border-top:1px solid var(--line)}
+ol.recs li:last-child{border-bottom:1px solid var(--line)}
+ol.recs li::before{content:counter(rec);position:absolute;left:0;top:.75rem;width:2rem;height:2rem;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-family:var(--mono);font-size:.85rem;display:grid;place-items:center}
+ol.recs li b{font-weight:600}
+ol.recs li p{margin:.25rem 0 0;color:var(--ink-2)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.1em .5em;border-radius:3px;background:var(--accent-soft);color:var(--accent);margin-left:.4rem;vertical-align:middle}
+footer{margin:4rem 0 3rem;color:var(--ink-3);font-size:.85rem;border-top:1px solid var(--line);padding-top:1rem}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="eyebrow">Engineering tooling</div>
+  <h1 style="margin-top:.5rem">Code review skills: what we have, what is missing</h1>
+  <p class="lede">Every code-review skill, agent, command and hook installed on one engineer's workstation, read in full and compared on the capabilities a complete review needs. Fourteen tools, one conclusion: every capability exists somewhere, and no tool has more than a third of them.</p>
+  <div class="meta">
+    <span><b>Date</b> 2026-09-05</span>
+    <span><b>Sources</b> agent-skills fork · pstack 0.14.5 · 5 installed Claude Code plugins · bmad in ~20 repos · personal skills · 3 uninstalled marketplace plugins · 2 CI workflows</span>
+  </div>
+</header>
+
+<nav class="toc"><div class="wide"><ol>
+  <li><a href="#answer">Answer</a></li>
+  <li><a href="#inventory">Inventory</a></li>
+  <li><a href="#matrix">Capability matrix</a></li>
+  <li><a href="#families">Per-family assessment</a></li>
+  <li><a href="#gaps">Gaps nobody fills</a></li>
+  <li><a href="#recs">Recommendations</a></li>
+</ol></div></nav>
+
+<main>
+<section class="wrap" id="answer">
+  <h2>The one-paragraph answer</h2>
+  <div class="answer">
+    <p>The rubric is best in <span class="mono">agent-skills</span>, the false-positive control is best in Anthropic's <span class="mono">code-review</span> plugin, the synthesis and dismissal discipline is best in pstack <span class="mono">interrogate</span>, the evidence standard is best in pstack <span class="mono">blast-radius</span>, the outward-facing writing is best in the personal <span class="mono">pr-review</span>, and the only tool that knows what actually breaks in our repos is a bmad override that loads a per-repo file of empirically verified defect classes.</p>
+    <p>Nothing runs the code. Nothing checks the API/UI contract mechanically, even though contract mismatch is our single largest verified defect class. Nothing learns from review outcomes. Nothing runs in CI on the main product repos. Nothing is evaluated. And the installs are drifting: three copies of the thermo-nuclear quality rubric, two versions of pr-review, two empty defect-review directories, one defect-class file that no skill loads.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="n">14</div><div class="l">distinct review tools installed or in repos</div></div>
+    <div class="stat"><div class="n">7</div><div class="l">incompatible severity vocabularies</div></div>
+    <div class="stat"><div class="n">1</div><div class="l">tool that proves findings by running code</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">review evals on any skill we rely on</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">automated PR reviews on the two main product repos</div></div>
+  </div>
+</section>
+
+<section class="wide" id="inventory">
+  <div class="wrap" style="padding:0"><h2>Inventory</h2>
+  <p>Ordered by family. The last three rows are available in the official marketplace but not installed; they matter because they hold lenses nothing installed provides.</p></div>
+  <div class="scroll"><table class="inv">
+    <thead><tr><th></th><th>Tool</th><th>Where</th><th>Entry point</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>code-review-and-quality<br>code-reviewer persona<br>/review · /ship</td><td>agent-skills fork</td><td>/review, /ship</td><td>Five-axis rubric (correctness, readability, architecture, security, performance), Google-style approval standard, severity prefixes, change sizing, dependency-upgrade review, one eval case with fixture.</td></tr>
+      <tr><td class="num">2</td><td>interrogate</td><td>pstack</td><td>/pstack:interrogate</td><td>N parallel adversarial reviewers with one rubric, consensus weighting, lead judgment into Act on / Consider / Noted / Dismissed plus an agreement map.</td></tr>
+      <tr><td class="num">3</td><td>blast-radius</td><td>pstack</td><td>/pstack:blast-radius</td><td>Beyond-diff breakage. Finds "the one fact it is safe because of", grades it on a five-rung evidence ladder, proves it by running code.</td></tr>
+      <tr><td class="num">4</td><td>no-comments<br>comment-sicko agent</td><td>pstack</td><td>/pstack:no-comments</td><td>Comment and lint-suppression audit, MUST KILL refactor flags, offers to encode "do not remove" constraints as types, tests or lint.</td></tr>
+      <tr><td class="num">5</td><td>babysit playbook<br>bugbot-triage.md</td><td>pstack</td><td>via /poteto-mode</td><td>Inbound review-comment triage (fix / dismiss / ask), ask-by-default categories, learned-pattern format with candidate / recurring / strong confidence.</td></tr>
+      <tr><td class="num">6</td><td>code-review</td><td>Anthropic plugin, installed</td><td>/code-review:code-review</td><td>Haiku precheck, two CLAUDE.md agents plus two bug agents, a validation subagent per finding, one GitHub comment with full-SHA permalinks.</td></tr>
+      <tr><td class="num">7</td><td>code-review · simplify · security-review</td><td>Claude Code built-ins</td><td>/code-review, /simplify, /security-review</td><td>Effort dial low to max, --comment inline, --fix, typed ReportFindings output. Source not inspectable.</td></tr>
+      <tr><td class="num">8</td><td>feature-dev:code-reviewer</td><td>Anthropic plugin, installed</td><td>Phase 6 of /feature-dev</td><td>Sonnet agent, 0–100 confidence with an 80 gate, three parallel focuses inside the feature workflow.</td></tr>
+      <tr><td class="num">9</td><td>security-guidance</td><td>Anthropic plugin, installed</td><td>hooks, automatic</td><td>Regex warnings on Edit and Write, LLM diff review at Stop, agentic commit review that traces data flow across files.</td></tr>
+      <tr><td class="num">10</td><td>thermo-nuclear-review<br>thermo-nuclear-code-quality-review</td><td>thermos and cursor-team-kit (identical copies)</td><td>/thermos:… · /cursor-team-kit:…</td><td>Security, breaking-functionality, devex and feature-flag-leak audit. Separately, the "code judo" maintainability audit.</td></tr>
+      <tr><td class="num">11</td><td>review-and-ship · verify-this · get-pr-comments · make-pr-easy-to-review · pr-review-canvas · deslop</td><td>cursor-team-kit</td><td>/cursor-team-kit:…</td><td>Review then test then commit then PR; falsifiable-claim verification; inbound comment summary; author-side reviewability; HTML walkthrough; AI-slop removal.</td></tr>
+      <tr><td class="num">12</td><td>bmad-code-review<br>+ Blind Hunter · Edge Case Hunter · Acceptance Auditor<br>bmad-story-automator-review · bmad-checkpoint-preview</td><td>.claude/skills in ~20 repos</td><td>/bmad-code-review</td><td>Context cascade, three parallel layers, triage into decision-needed / patch / defer / dismiss, story-file and sprint-status sync. Six repos override it with defect classes and a GitHub posting hook.</td></tr>
+      <tr><td class="num">13</td><td>defect-review</td><td>one service repo (real); two others (empty dirs)</td><td>/defect-review</td><td>Self-contained defect-class review with a needs-human-review tier and an auditable comment with VERDICT line.</td></tr>
+      <tr><td class="num">14</td><td>pr-review · issue-review</td><td>personal ~/.claude and the team plugin</td><td>/pr-review &lt;PR&gt;</td><td>Must-fix-only bar, verify before posting, inline comments, consequence-first plain language, at most five findings.</td></tr>
+      <tr class="na"><td></td><td>pr-review-toolkit</td><td>official marketplace, not installed</td><td></td><td>Six agents: silent-failure-hunter, pr-test-analyzer, type-design-analyzer, comment-analyzer, code-reviewer, code-simplifier, routed by change type.</td></tr>
+      <tr class="na"><td></td><td>claude-security</td><td>official marketplace, not installed</td><td></td><td>Threat-model-first scan of a repo, branch or PR diff with independent verification and patch generation.</td></tr>
+      <tr class="na"><td></td><td>claude-code-action review</td><td>two smaller repos (manual dispatch; @claude mention)</td><td>GitHub Actions</td><td>Generic review prompt. Nothing on the main product repos.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="wide" id="matrix">
+  <div class="wrap" style="padding:0"><h2>Capability matrix</h2>
+  <p>Columns are the tools that review a diff end to end. Rows are the capabilities a complete review needs, grouped as acquisition, lenses, evidence, control, and output. Hover a row to follow it across.</p>
+  <div class="legend"><span class="h"><b>●</b>has it</span><span class="p"><b>◐</b>partial or prose only</span><span class="m"><b>○</b>missing</span><span class="q"><b>?</b>not inspectable</span></div></div>
+  <div class="scroll"><table class="mx">
+    <thead><tr>
+      <th>Capability</th><th>agent-skills</th><th>pstack interrogate</th><th>pstack blast-radius</th><th>Anthropic code-review</th><th>built-in code-review</th><th>thermo-nuclear</th><th>bmad + override</th><th>defect-review</th><th>pr-review</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Scope acquisition (PR, branch, tree, paths)</td><td class="p">◐<small>staged or recent</small></td><td class="h">●</td><td class="h">●</td><td class="p">◐<small>PR only</small></td><td class="h">●</td><td class="p">◐<small>parent gathers</small></td><td class="h">●<small>5-tier cascade</small></td><td class="h">●</td><td class="p">◐<small>PR only</small></td></tr>
+      <tr><td>Captures author intent (PR body, spec)</td><td class="p">◐</td><td class="h">●<small>intent paragraph</small></td><td class="h">●</td><td class="h">●</td><td class="q">?</td><td class="p">◐</td><td class="h">●<small>spec + AC layer</small></td><td class="p">◐</td><td class="h">●</td></tr>
+      <tr><td>Correctness lens</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td></tr>
+      <tr><td>Security lens</td><td class="h">●<small>checklist</small></td><td class="p">◐<small>only if traced</small></td><td class="m">○</td><td class="m">○<small>excluded</small></td><td class="p">◐<small>separate skill</small></td><td class="h">●</td><td class="p">◐<small>via priors</small></td><td class="h">●</td><td class="h">●</td></tr>
+      <tr><td>Architecture / simplification lens</td><td class="h">●<small>named remedies</small></td><td class="h">●<small>code judo</small></td><td class="m">○</td><td class="m">○<small>excluded</small></td><td class="h">●</td><td class="h">●</td><td class="m">○</td><td class="m">○</td><td class="m">○<small>excluded</small></td></tr>
+      <tr><td>Performance lens</td><td class="h">●</td><td class="p">◐</td><td class="m">○</td><td class="m">○</td><td class="h">●<small>efficiency</small></td><td class="m">○</td><td class="p">◐<small>via priors</small></td><td class="m">○</td><td class="m">○<small>excluded</small></td></tr>
+      <tr><td>Test-coverage lens</td><td class="p">◐<small>tests first</small></td><td class="p">◐</td><td class="m">○</td><td class="m">○<small>excluded</small></td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○<small>excluded</small></td></tr>
+      <tr><td>Error handling / silent failure lens</td><td class="m">○</td><td class="p">◐</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="p">◐<small>via priors</small></td><td class="h">●<small>fail-open class</small></td><td class="m">○</td></tr>
+      <tr><td>Devex and feature-flag-leak lens</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="h">●<small>unique</small></td><td class="m">○</td><td class="m">○</td><td class="m">○</td></tr>
+      <tr><td>Beyond-diff context (callers, consumers, sibling repos)</td><td class="m">○</td><td class="h">●<small>read callers</small></td><td class="h">●<small>where grep stops</small></td><td class="m">○<small>diff-only by design</small></td><td class="q">?</td><td class="h">●<small>trace side effects</small></td><td class="p">◐<small>Edge Hunter forbidden; override names consumer repo</small></td><td class="h">●<small>names consumer repo</small></td><td class="h">●</td></tr>
+      <tr><td>Evidence by running code or tests</td><td class="m">○<small>checklist item</small></td><td class="m">○</td><td class="h">●<small>rungs 4–5</small></td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td></tr>
+      <tr><td>Pre-existing vs introduced scoping</td><td class="m">○</td><td class="m">○</td><td class="q">n/a</td><td class="h">●<small>explicit</small></td><td class="q">?</td><td class="h">●<small>explicit</small></td><td class="h">●<small>defer bucket</small></td><td class="m">○</td><td class="p">◐</td></tr>
+      <tr><td>False-positive control</td><td class="m">○</td><td class="h">●<small>consensus + lead judgment</small></td><td class="h">●<small>evidence ladder</small></td><td class="h">●<small>validation per finding</small></td><td class="h">●<small>effort dial</small></td><td class="p">◐<small>no unfinished research</small></td><td class="p">◐<small>dedupe, no validation</small></td><td class="p">◐<small>failure scenario</small></td><td class="h">●<small>verify before posting</small></td></tr>
+      <tr><td>Repo-specific defect priors</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="p">◐<small>CLAUDE.md only</small></td><td class="m">○</td><td class="m">○</td><td class="h">●<small>per repo</small></td><td class="h">●</td><td class="m">○</td></tr>
+      <tr><td>Severity taxonomy and finding cap</td><td class="h">●<small>5 labels, no cap</small></td><td class="h">●<small>4 buckets, ≤5 Act on</small></td><td class="q">n/a</td><td class="p">◐<small>flat list</small></td><td class="h">●<small>typed</small></td><td class="m">○<small>undefined</small></td><td class="h">●<small>4 buckets</small></td><td class="h">●<small>3 verdicts</small></td><td class="h">●<small>≤5</small></td></tr>
+      <tr><td>Merge verdict</td><td class="h">●</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="h">●<small>via override</small></td><td class="h">●</td><td class="m">○<small>comments only</small></td></tr>
+      <tr><td>Posts to GitHub</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="h">●<small>comment + permalinks</small></td><td class="h">●<small>--comment inline</small></td><td class="m">○</td><td class="h">●<small>issue + PR</small></td><td class="h">●<small>issue + PR, disk fallback</small></td><td class="h">●<small>inline via API</small></td></tr>
+      <tr><td>Idempotent, skips already reviewed</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="h">●</td><td class="q">?</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○<small>re-posts</small></td></tr>
+      <tr><td>Inbound triage of others' comments</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="p">◐<small>reads after audit</small></td><td class="m">○</td><td class="m">○</td><td class="m">○</td></tr>
+      <tr><td>Applies fixes</td><td class="p">◐<small>asks</small></td><td class="m">○<small>by design</small></td><td class="m">○</td><td class="m">○</td><td class="h">●<small>--fix</small></td><td class="m">○</td><td class="h">●<small>patch option</small></td><td class="m">○</td><td class="m">○</td></tr>
+      <tr><td>Non-interactive, CI-safe</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="h">●</td><td class="m">○<small>HALTs; automator variant in some repos</small></td><td class="h">●</td><td class="h">●</td></tr>
+      <tr><td>Evals exist</td><td class="h">●<small>3-tier harness, 1 case</small></td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="q">?</td><td class="m">○</td><td class="m">○</td><td class="m">○</td><td class="m">○</td></tr>
+      <tr><td>Cost tiering (haiku, sonnet, opus)</td><td class="m">○</td><td class="h">●<small>configurable</small></td><td class="m">○</td><td class="h">●</td><td class="h">●</td><td class="m">○</td><td class="p">◐<small>same capability</small></td><td class="m">○</td><td class="m">○</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="wrap" id="families">
+  <h2>Per-family assessment</h2>
+
+  <div class="family">
+    <h3>agent-skills fork: code-review-and-quality</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>The most complete written rubric in the set. It encodes review culture, not just bug-finding: the "improves overall code health" approval standard, the facts &gt; style guide &gt; design &gt; consistency hierarchy for disagreements, and "don't accept I'll clean it up later".</li>
+        <li>Structural remedies are named moves (replace a conditional chain with a dispatcher, delete a pass-through wrapper, make a type boundary explicit), so a finding proposes the fix.</li>
+        <li>Change sizing with concrete thresholds (100 / 300 / 1000 changed lines, ~1000-line files) and four splitting strategies.</li>
+        <li>A dependency-upgrade review workflow (changelog, one package per change, lockfile diff) that no other tool has.</li>
+        <li>Severity prefixes separate required from optional so authors don't treat every comment as mandatory.</li>
+        <li>The only family with an eval harness: structural, trigger-routing and behavioral tiers, with a real fixture (SQL injection plus log injection in a user-search endpoint).</li>
+        <li>Portable across Claude Code, Cursor, Gemini, Codex and Copilot.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>No procedure for acquiring the diff. /review says "staged or recent commits"; no PR number, branch or path handling.</li>
+        <li>No verification step. Findings are asserted against the diff; nothing says trace the call chain, check the caller, or run anything. "Verify the verification" is about the author's story, not the reviewer's.</li>
+        <li>No false-positive control: no confidence gate, no validation pass, no pre-existing-vs-introduced rule, no finding cap. A checklist this long pulls toward nit-heavy output despite the "lead with what matters" paragraph.</li>
+        <li>The multi-model review pattern is a diagram, never operationalized.</li>
+        <li>No GitHub posting, no verdict beyond a checkbox, no idempotency.</li>
+        <li>Taxonomy drift inside the repo: the skill and persona use Critical / Required / Optional / Nit / FYI; <code>commands/review.toml</code> and <code>.claude/commands/review.md</code> say Critical / Important / Suggestion.</li>
+        <li>Review speed and disagreement handling are human-team concerns that cost context every invocation without changing agent behaviour.</li>
+        <li>One behavioral eval case.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>pstack: interrogate, blast-radius, no-comments, babysit triage, shipping</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>interrogate has the best synthesis design here: state the intent, spawn read-only reviewers with one rubric, weight consensus, then apply lead judgment with named filters (nitpick gravity, hypothetical vs actual, premature abstraction, "I would have done it differently", missing-context signals). The Dismissed section is explicitly a trust mechanism.</li>
+        <li>Its rubric adds what others miss: idempotency ("what if it runs twice or crashed halfway"), structural vs conventional serialization of shared state, root cause vs symptom with an instruction to read callers and types, and security findings only when the input path is traced.</li>
+        <li>blast-radius is the only tool whose deliverable is proof. Five rungs (said so, pointed at the line, walked the bad case, ran it, reproduced in the app); anything below rung 4 is written up as unproven.</li>
+        <li>no-comments is the only lens on lint and TypeScript suppressions, and it asks whether a "do not remove" comment should be a type, a test or a lint rule.</li>
+        <li>bugbot-triage.md is the only artifact handling the inbound half: fix / dismiss / ask, ask-by-default for security, auth, billing and migrations, and a learned-pattern format with confidence levels.</li>
+        <li>The shipping playbook separates author from judge and posts verdicts on the PR so the record outlives the chat.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>interrogate's premise, model diversity, is degraded here: the Agent tool accepts only Claude models, so the panel has correlated blind spots. Context diversity (blind vs contextual vs consumer-side), which bmad does, would be the substitute, and interrogate does not do it.</li>
+        <li>No GitHub posting, no verdict, no idempotency. Terminal-only deliverable.</li>
+        <li>Reviewers can read but are not told to run anything; the evidence ladder lives in blast-radius, not in the reviewer prompt.</li>
+        <li>No repo-specific priors loaded into reviewers.</li>
+        <li>All carry <code>disable-model-invocation: true</code>; they never fire unless typed.</li>
+        <li>Babysit, shipping and the watcher are bound to Graphite, Cursor Bugbot and bun scripts. The triage rubric is reusable; the mechanics are not.</li>
+        <li>No evals. The code-quality lens is a near-copy of thermo-nuclear-code-quality-review, so that rubric now lives in three installed places.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>Anthropic code-review plugin and feature-dev:code-reviewer</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>The best false-positive pipeline: an explicit do-not-flag list (pre-existing, linter-catchable, silenced by lint-ignore, "looks like a bug but is correct", pedantic nitpicks), a validation subagent per finding, and CLAUDE.md violations must quote the exact rule.</li>
+        <li>Idempotent: skips closed, draft, trivial and already-reviewed PRs.</li>
+        <li>Cheap by construction: haiku prechecks, sonnet compliance and summary, opus only for bug hunting and validation.</li>
+        <li>One GitHub comment with full-SHA permalinks and a line of context, which renders correctly.</li>
+        <li>One bug agent is deliberately diff-only and the other reads changed code, a small context-diversity trick.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>Scope is bugs plus CLAUDE.md compliance. Security, test coverage and quality are excluded "unless explicitly required in CLAUDE.md", so CLAUDE.md becomes the only place for repo priors, and ours is a project guide, not a defect list.</li>
+        <li>PR only. Cannot review a working tree or branch before the PR exists.</li>
+        <li>Summary comment, not inline; no verdict line.</li>
+        <li>README and command have drifted: the README promises a 0–100 confidence score with an 80 threshold and a git-blame history agent; the command implements neither.</li>
+        <li>feature-dev:code-reviewer runs on sonnet by default, reviews unstaged changes only, and posts nothing.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>Built-in code-review, simplify, security-review</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>The effort dial (low and medium: fewer, high-confidence findings; high to max: broader coverage), inline <code>--comment</code>, <code>--fix</code>, and typed ReportFindings that the IDE renders.</li>
+        <li>simplify is scoped to quality only and says so.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>Source is not inspectable, so it cannot be customized with defect classes, verdict lines or posting format, and cannot be put under evals. Treat it as a baseline to compare against, not a thing to build on.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>thermos and cursor-team-kit</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>thermo-nuclear-review carries two lenses nobody else has: breaking developer experience (env var renames, port remaps, new required scripts) and feature-flag leaks. Its "intended breakage" and over-reporting paragraphs are well calibrated.</li>
+        <li>It reads the PR discussion only after its own audit, so it has fresh eyes and can then attribute Bugbot findings.</li>
+        <li>verify-this gives a verdict vocabulary for evidence: VERIFIED / NOT VERIFIED / INCONCLUSIVE with baseline and treatment captured the same way.</li>
+        <li>make-pr-easy-to-review and pr-review-canvas cover the author side and the human walkthrough, which no other family does.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>thermo-nuclear-review defines no output format, no severity taxonomy and no posting. It is a prompt, not a workflow.</li>
+        <li>The parent must gather the diff and file contents; the subagent cannot start from a PR number.</li>
+        <li>The quality rubric is duplicated identically in thermos, cursor-team-kit and pstack.</li>
+        <li>review-and-ship commits and opens the PR in the same flow as the review, so reviewer and author are the same agent, which the pstack shipping playbook explicitly forbids.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>bmad-code-review and the workspace overrides</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>The only tool with a spec-conformance layer (Acceptance Auditor checks the diff against the story's acceptance criteria) and the only one integrated with the story lifecycle.</li>
+        <li>Context diversity by design: Blind Hunter gets the diff and nothing else, Edge Case Hunter gets diff plus repo, Acceptance Auditor gets diff plus spec. Under Claude-only models this is the right substitute for model diversity.</li>
+        <li>Action-oriented triage: decision-needed / patch / defer / dismiss, with defer for pre-existing issues.</li>
+        <li>The customization surface is what made our best review tooling possible. <code>persistent_facts</code> loads defect classes derived from an LLM classification of every fix deploy over a six-month window. <code>on_complete</code> posts an auditable comment with a VERDICT line to the issue and PR, with a disk fallback, and refuses to post to a guessed issue number.</li>
+        <li>The needs-human-review tier (auth, config, migrations, integrations, or more than 400 changed lines) fires regardless of findings.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>Blind Hunter is told to "find at least ten issues" and to HALT on zero findings as "suspicious". This manufactures findings and contradicts the override's "a style nit is never a finding". Nothing downstream validates them.</li>
+        <li>Edge Case Hunter is forbidden from reading beyond the diff, so its unhandled-path findings are hypotheticals the triage step dismisses by hand.</li>
+        <li>No validation pass between layers and triage; dedupe and classify only.</li>
+        <li>Interactive HALTs at every step make it unusable in CI or a loop. The non-interactive story-automator variant exists in only about half the repos.</li>
+        <li>Heavy activation ceremony: a python resolver, config.yaml, greeting the user in the configured language.</li>
+        <li>Uneven coverage. Defect classes and the posting hook are wired in six repos. One repo has a defect-class file but no toml override, so the skill never loads it. Two repos have defect-review directories with no SKILL.md.</li>
+        <li>The defect classes are a snapshot, regenerated by hand, with no feedback from review outcomes.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>Personal and shared: pr-review, issue-review, defect-review</h3>
+    <div class="two">
+      <div><h4 class="plus">Strengths</h4><ul>
+        <li>pr-review has the best outward-facing discipline: a must-fix-only bar with a named exclusion list, a mandatory verify-before-posting step, inline comments via the review API, consequence-first plain language ("the code does / so / when"), jargon glossed inline, evidence in a collapsed block, at most five findings, comments only.</li>
+        <li>defect-review is a good self-contained pattern: priors, tier, auditable comment, disk fallback, in sixty lines.</li>
+      </ul></div>
+      <div><h4 class="minus">Missing</h4><ul>
+        <li>pr-review is single-pass and single-lens: no parallel reviewers, no consensus, no repo priors, no test run, no verdict, no idempotency (re-running posts duplicates), PR only.</li>
+        <li>The personal copy and the team plugin copy have drifted: the plugin version, which the team installs, lacks the entire plain-language writing section.</li>
+        <li>issue-review hardcodes one repo and a specific review-plan document, and calls bmad-code-review inside a non-interactive flow that bmad will HALT.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="family">
+    <h3>Available but not installed</h3>
+    <ul class="plain">
+      <li><b>pr-review-toolkit</b> provides the two lenses most aligned with the verified defect classes and absent everywhere else: silent-failure-hunter (fail-open error handling is a named class in three repos) and pr-test-analyzer (behavioural coverage gaps rated 1–10). Also type-design-analyzer and comment-analyzer.</li>
+      <li><b>claude-security</b> does a threat-model-first scan of a diff with independent verification and patch generation. Heavy, but the only deep security option beyond regex hooks and checklists.</li>
+      <li><b>security-guidance</b> is installed and useful, but its agentic commit reviewer does not read the org policy file; only the Stop-hook review does.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="wrap" id="gaps">
+  <h2>Gaps no tool fills</h2>
+  <ol class="gaps">
+    <li><div><b>No end-to-end flow.</b><p>Priors, layered fan-out, per-finding validation, evidence by execution, plain-language inline posting, verdict, idempotency: each exists once, none exist together.</p></div></li>
+    <li><div><b>Nothing runs the code.</b><p>Only blast-radius (one fact) and verify-this (one claim) execute anything. No review skill runs the affected tests, checks CI status, or reproduces a claimed bug before posting it.</p></div></li>
+    <li><div><b>No mechanical contract check.</b><p>Contract mismatch between the API and the UI is our largest verified defect class. It appears only as prose ("grep the UI repo for the endpoint path"). No step diffs a response model against the hook that reads it.</p></div></li>
+    <li><div><b>No learning loop.</b><p>Accepted and dismissed findings, and post-merge fixes, never flow back into the defect classes. bugbot-triage.md has the right learned-pattern format, but it is Cursor-bound and unused here.</p></div></li>
+    <li><div><b>No evals for anything we rely on.</b><p>agent-skills has the harness; pr-review, defect-review, the bmad override and interrogate have zero cases. We already hold a classified corpus of past fix diffs that would make a regression suite: does the reviewer catch the class of bug that actually shipped?</p></div></li>
+    <li><div><b>No CI trigger where it matters.</b><p>Required status checks are unavailable on our GitHub plan and most PRs in some repos merge unreviewed. claude-code-action review exists only on two smaller repos. The main product repos have none.</p></div></li>
+    <li><div><b>No incremental review.</b><p>Only the Anthropic plugin skips an already-reviewed PR; nothing reviews just the commits since the last review comment.</p></div></li>
+    <li><div><b>No GitHub inbound triage.</b><p>Reply-with-disproof, resolve-thread, and ask-by-default categories exist only in the Graphite-bound babysit playbook.</p></div></li>
+    <li><div><b>Seven severity vocabularies.</b><p>Critical/Required/Nit/Optional/FYI; Critical/Important/Suggestion; critical/warning/nit; Act on/Consider/Noted/Dismissed; decision-needed/patch/defer/dismiss; fix/dismiss/ask; merge-ready/needs-changes/needs-human-review. A reader of two reviews cannot compare them.</p></div></li>
+    <li><div><b>Front-end lenses are prose only.</b><p>React Query invalidation under an infinite staleTime, effect cleanup, and the design-system guardrail are listed in the UI repo's defect classes; no review step runs the guardrail script or enumerates a mutation's invalidation set.</p></div></li>
+    <li><div><b>Human handoff is not wired.</b><p>needs-human-review is a verdict string; bmad-checkpoint-preview and pr-review-canvas exist to produce a human walkthrough and nothing invokes them when that verdict fires.</p></div></li>
+    <li><div><b>Drift and dead installs.</b><p>Three copies of the quality rubric; two versions of pr-review; two empty defect-review directories; one unwired defect-class file; one command with hardcoded repo paths.</p></div></li>
+  </ol>
+</section>
+
+<section class="wrap" id="recs">
+  <h2>Recommendations, in priority order</h2>
+  <ol class="recs">
+    <li><b>Build one workspace review skill in the team plugin</b> from the best parts.<p>bmad-style layered fan-out (blind / contextual with defect classes / consumer-contract / spec-AC when a story exists), then per-finding validation subagents (Anthropic pattern), then lead judgment with a Dismissed section and a finding cap (interrogate), then consequence-first inline comments plus a VERDICT line (pr-review and defect-review), then skip if already reviewed at this SHA. Drop the "at least ten findings" mandate. Non-interactive by default.</p></li>
+    <li><b>Fix the installs this week.</b><p>Sync the plugin pr-review with the personal copy. Wire the orphaned defect-class file through a bmad-code-review.toml. Delete or fill the empty defect-review directories. Remove two of the three quality-rubric copies. Retire or generalize issue-review.</p></li>
+    <li><b>Add a contract-check step</b> between the API and the UI.<p>For each changed response model, locate the hook that reads the endpoint and compare field names, casing and wrapper keys. The single highest-leverage automation given the defect mix.</p></li>
+    <li><b>Put the skill in CI</b> with claude-code-action on pull_request for the main product repos.<p>It cannot block on our plan, but for most PRs it will be the only review that happens.</p></li>
+    <li><b>Install pr-review-toolkit</b> or fold silent-failure-hunter and pr-test-analyzer into the fan-out.<p>Both map to verified defect classes.</p></li>
+    <li><b>Adopt the evidence standard.</b><p>Any needs-changes finding must reach rung 3 of the blast-radius ladder (walked the failing case) and say which rung it reached; anything at rung 1 or 2 is Consider, not Act on.</p></li>
+    <li><b>Stand up evals</b> on the agent-skills harness.<p>Use real past fix diffs as fixtures, graded on "flags the class that shipped" and "posts at most five findings". Regenerate defect classes on a schedule and record the window in the file.</p></li>
+    <li><b>Unify the vocabulary.</b><p>One severity set and one verdict line across the plugin skill, the bmad override and defect-review.</p></li>
+    <li><b>Port bugbot-triage.md to GitHub threads</b> as the inbound half.<p>fix / dismiss-with-disproof / ask, ask-by-default for auth, billing, migrations and data.</p></li>
+    <li><b>Contribute back to the agent-skills fork.</b><p>A scope-acquisition procedure, a validation pass and false-positive list, a finding cap, the idempotency rule, and a fix for the Critical/Important/Suggestion drift in the two review commands. Its eval harness is the right place to prove each of those helps.</p></li>
+  </ol>
+</section>
+</main>
+
+<footer class="wrap">Compiled from a full read of each skill's SKILL.md, agent and command files, reference documents, override toml files and CI workflows on 2026-09-05. Built-in Claude Code skills are described from their published descriptions only. Repository names and internal metrics have been generalised for publication.</footer>
+</body>
+</html>
