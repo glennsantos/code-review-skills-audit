@@ -85,6 +85,7 @@ td.num{font-variant-numeric:tabular-nums;color:var(--ink-3);width:2ch}
 .mx th:first-child,.mx td:first-child{position:sticky;left:0;background:var(--bg-2);min-width:24ch;z-index:1;border-right:1px solid var(--line)}
 .mx thead th:first-child{background:var(--bg-3);z-index:2}
 .mx thead th{font-family:var(--mono);text-transform:none;letter-spacing:0;font-size:.74rem;min-width:9ch}
+.mx thead th small{display:block;margin-top:.3rem;font-family:var(--sans);font-size:.68rem;font-weight:400;letter-spacing:0;line-height:1.25;text-transform:none;color:var(--ink-3)}
 .mx td{text-align:center;font-family:var(--mono);font-size:.8rem;padding:.45rem .5rem}
 .mx td:first-child{text-align:left;font-family:var(--sans);font-size:.85rem}
 .mx td.h{color:var(--has)}
@@ -236,7 +237,16 @@ footer{margin:4rem 0 3rem;color:var(--ink-3);font-size:.85rem;border-top:1px sol
   <p class="table-hint">Swipe sideways to compare tools. The capability column remains visible.</p></div>
   <div class="scroll matrix-scroll" tabindex="0" role="region" aria-label="Capability matrix; swipe sideways to compare tools"><table class="mx">
     <thead><tr>
-      <th>Capability</th><th>agent-skills</th><th>pstack interrogate</th><th>pstack blast-radius</th><th>Anthropic code-review</th><th>built-in code-review</th><th>thermo-nuclear</th><th>bmad + override</th><th>defect-review</th><th>pr-review</th>
+      <th>Capability</th>
+      <th>agent-skills<small>General review rubric</small></th>
+      <th>pstack interrogate<small>Multi-reviewer synthesis</small></th>
+      <th>pstack blast-radius<small>Evidence-first breakage check</small></th>
+      <th>Anthropic code-review<small>PR bugs and policy compliance</small></th>
+      <th>built-in code-review<small>General baseline; source opaque</small></th>
+      <th>thermo-nuclear<small>Security and developer-experience audit</small></th>
+      <th>bmad + override<small>Layered review with repo defect classes</small></th>
+      <th>defect-review<small>Focused defect-class review</small></th>
+      <th>pr-review<small>Concise verified inline findings</small></th>
     </tr></thead>
     <tbody>
       <tr><td>Scope acquisition (PR, branch, tree, paths)</td><td class="p">◐<small>staged or recent</small></td><td class="h">●</td><td class="h">●</td><td class="p">◐<small>PR only</small></td><td class="h">●</td><td class="p">◐<small>parent gathers</small></td><td class="h">●<small>5-tier cascade</small></td><td class="h">●</td><td class="p">◐<small>PR only</small></td></tr>
