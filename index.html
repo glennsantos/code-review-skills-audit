@@ -123,6 +123,30 @@ ol.recs li b{font-weight:600}
 ol.recs li p{margin:.25rem 0 0;color:var(--ink-2)}
 .tag{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.1em .5em;border-radius:3px;background:var(--accent-soft);color:var(--accent);margin-left:.4rem;vertical-align:middle}
 footer{margin:4rem 0 3rem;color:var(--ink-3);font-size:.85rem;border-top:1px solid var(--line);padding-top:1rem}
+.table-hint{display:none}
+@media (max-width:760px){
+  .scroll{margin:1rem 0}
+  .inv thead{display:none}
+  .inv,.inv tbody,.inv tr,.inv td{display:block;width:100%}
+  .inv tr{padding:.55rem 0;border-bottom:1px solid var(--line)}
+  .inv tr:last-child{border-bottom:0}
+  .inv td{border:0;padding:.3rem .85rem .3rem 7.25rem;position:relative}
+  .inv td::before{position:absolute;left:.85rem;width:5.6rem;color:var(--ink-3);font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .inv td:nth-child(2)::before{content:"Tool"}
+  .inv td:nth-child(3)::before{content:"Where"}
+  .inv td:nth-child(4)::before{content:"Entry point"}
+  .inv td:nth-child(5)::before{content:"What it is"}
+  .inv td.num{display:inline-flex;width:auto;margin:.15rem .85rem .1rem;padding:.08rem .45rem;border-radius:999px;background:var(--bg-3);color:var(--ink-2);font-size:.75rem}
+  .inv td.num::before{content:none}
+  .inv td:nth-child(2){font-size:.92rem;font-weight:600}
+  .inv td:nth-child(3),.inv td:nth-child(4),.inv td:nth-child(5){min-width:0}
+  .mx th:first-child,.mx td:first-child{min-width:14.5ch}
+  .mx thead th{min-width:7.75ch;font-size:.68rem}
+  .mx td{padding:.42rem .38rem}
+  .table-hint{display:block;margin:.5rem 0 0;color:var(--ink-2);font-size:.82rem}
+  .scroll.matrix-scroll{scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  .mx th,.mx td{scroll-snap-align:start}
+}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 </style>
 </head>
@@ -166,7 +190,7 @@ footer{margin:4rem 0 3rem;color:var(--ink-3);font-size:.85rem;border-top:1px sol
 <section class="wide" id="inventory">
   <div class="wrap" style="padding:0"><h2>Inventory</h2>
   <p>Ordered by family. The last three rows are available in the official marketplace but not installed; they matter because they hold lenses nothing installed provides.</p></div>
-  <div class="scroll"><table class="inv">
+  <div class="scroll" aria-label="Review tools inventory"><table class="inv">
     <thead><tr><th></th><th>Tool</th><th>Where</th><th>Entry point</th><th>What it is</th></tr></thead>
     <tbody>
       <tr><td class="num">1</td><td>code-review-and-quality<br>code-reviewer persona<br>/review · /ship</td><td>agent-skills fork</td><td>/review, /ship</td><td>Five-axis rubric (correctness, readability, architecture, security, performance), Google-style approval standard, severity prefixes, change sizing, dependency-upgrade review, one eval case with fixture.</td></tr>
@@ -193,8 +217,9 @@ footer{margin:4rem 0 3rem;color:var(--ink-3);font-size:.85rem;border-top:1px sol
 <section class="wide" id="matrix">
   <div class="wrap" style="padding:0"><h2>Capability matrix</h2>
   <p>Columns are the tools that review a diff end to end. Rows are the capabilities a complete review needs, grouped as acquisition, lenses, evidence, control, and output. Hover a row to follow it across.</p>
-  <div class="legend"><span class="h"><b>●</b>has it</span><span class="p"><b>◐</b>partial or prose only</span><span class="m"><b>○</b>missing</span><span class="q"><b>?</b>not inspectable</span></div></div>
-  <div class="scroll"><table class="mx">
+  <div class="legend"><span class="h"><b>●</b>has it</span><span class="p"><b>◐</b>partial or prose only</span><span class="m"><b>○</b>missing</span><span class="q"><b>?</b>not inspectable</span></div>
+  <p class="table-hint">Swipe sideways to compare tools. The capability column remains visible.</p></div>
+  <div class="scroll matrix-scroll" tabindex="0" role="region" aria-label="Capability matrix; swipe sideways to compare tools"><table class="mx">
     <thead><tr>
       <th>Capability</th><th>agent-skills</th><th>pstack interrogate</th><th>pstack blast-radius</th><th>Anthropic code-review</th><th>built-in code-review</th><th>thermo-nuclear</th><th>bmad + override</th><th>defect-review</th><th>pr-review</th>
     </tr></thead>
