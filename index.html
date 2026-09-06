@@ -149,16 +149,16 @@ footer{margin:4rem 0 3rem;color:var(--ink-3);font-size:.85rem;border-top:1px sol
   .mx td{min-width:0;padding:.5rem .75rem;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(8.5rem,42%) 1fr;gap:.5rem;align-items:start;text-align:left;font-family:var(--mono);font-size:.82rem}
   .mx td:first-child{position:static;display:block;min-width:0;padding:.7rem .75rem;background:var(--bg-3);border-right:0;text-align:left;font-family:var(--sans);font-size:.92rem;font-weight:600}
   .mx td:last-child{border-bottom:0}
-  .mx td:not(:first-child)::before{color:var(--ink-2);font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.04em;line-height:1.25;text-transform:none}
-  .mx td:nth-child(2)::before{content:"agent-skills"}
-  .mx td:nth-child(3)::before{content:"pstack interrogate"}
-  .mx td:nth-child(4)::before{content:"pstack blast-radius"}
-  .mx td:nth-child(5)::before{content:"Anthropic code-review"}
-  .mx td:nth-child(6)::before{content:"built-in code-review"}
-  .mx td:nth-child(7)::before{content:"thermo-nuclear"}
-  .mx td:nth-child(8)::before{content:"bmad + override"}
-  .mx td:nth-child(9)::before{content:"defect-review"}
-  .mx td:nth-child(10)::before{content:"pr-review"}
+  .mx td:not(:first-child)::before{color:var(--ink-2);font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.04em;line-height:1.25;text-transform:none;white-space:pre-line}
+  .mx td:nth-child(2)::before{content:"agent-skills\A General review rubric"}
+  .mx td:nth-child(3)::before{content:"pstack interrogate\A Multi-reviewer synthesis"}
+  .mx td:nth-child(4)::before{content:"pstack blast-radius\A Evidence-first breakage check"}
+  .mx td:nth-child(5)::before{content:"Anthropic code-review\A PR bugs and policy compliance"}
+  .mx td:nth-child(6)::before{content:"built-in code-review\A General baseline; source opaque"}
+  .mx td:nth-child(7)::before{content:"thermo-nuclear\A Security and developer-experience audit"}
+  .mx td:nth-child(8)::before{content:"bmad + override\A Layered review with repo defect classes"}
+  .mx td:nth-child(9)::before{content:"defect-review\A Focused defect-class review"}
+  .mx td:nth-child(10)::before{content:"pr-review\A Concise verified inline findings"}
   .mx td small{display:inline;margin:.1rem 0 0 .35rem}
   .table-hint{display:block;margin:.5rem 0 0;color:var(--ink-2);font-size:.82rem}
   .table-hint::after{content:" On phones, each capability is shown as a readable card."}
